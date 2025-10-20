@@ -1,12 +1,9 @@
 package jooyung.com.balance_api.common.controller
 
-import jooyung.com.balance_api.common.dto.CommonCodeResponseDto
+import jooyung.com.balance_api.common.dto.response.CommonCodeResponseDto
 import jooyung.com.balance_api.common.service.CommonService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/common")

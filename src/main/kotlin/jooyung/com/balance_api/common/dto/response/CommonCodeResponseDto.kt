@@ -1,4 +1,4 @@
-package jooyung.com.balance_api.common.dto
+package jooyung.com.balance_api.common.dto.response
 
 data class CommonCodeItemDto(
     val code: String,

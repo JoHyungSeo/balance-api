@@ -1,8 +1,8 @@
 package jooyung.com.balance_api.common.service
 
 import jakarta.transaction.Transactional
-import jooyung.com.balance_api.common.dto.CommonCodeItemDto
-import jooyung.com.balance_api.common.dto.CommonCodeResponseDto
+import jooyung.com.balance_api.common.dto.response.CommonCodeItemDto
+import jooyung.com.balance_api.common.dto.response.CommonCodeResponseDto
 import jooyung.com.balance_api.common.repository.CommonRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
