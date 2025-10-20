@@ -1,6 +1,6 @@
-package jooyung.com.balance_api
+package jooyung.com.joomoney_api
 
-interface BalanceConstants {
+interface JoomoneyConstants {
     companion object {
         const val USE_Y = "Y"
         const val USE_N = "N"

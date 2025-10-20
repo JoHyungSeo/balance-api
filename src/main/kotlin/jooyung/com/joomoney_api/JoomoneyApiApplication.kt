@@ -1,11 +1,11 @@
-package jooyung.com.balance_api
+package jooyung.com.joomoney_api
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class BalanceApiApplication
+class JoomoneyApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<BalanceApiApplication>(*args)
+	runApplication<JoomoneyApiApplication>(*args)
 }
