@@ -9,7 +9,7 @@ plugins {
 
 group = 'jooyung.com'
 version = '0.0.1-SNAPSHOT'
-description = 'balance-api project for Spring Boot'
+description = 'joomoney-api project for Spring Boot'
 
 java {
     toolchain {
