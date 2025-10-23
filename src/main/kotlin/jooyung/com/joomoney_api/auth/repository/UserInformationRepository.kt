@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserRepository : JpaRepository<UserInformation, Long> {
+interface UserInformationRepository : JpaRepository<UserInformation, Long> {
     fun existsByUserId(userId: String): Boolean
 
     fun existsByEmail(email: String): Boolean

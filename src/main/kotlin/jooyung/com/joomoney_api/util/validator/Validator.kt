@@ -2,8 +2,8 @@ package jooyung.com.joomoney_api.util.validator
 
 import jooyung.com.joomoney_api.JoomoneyConstants
 import jooyung.com.joomoney_api.common.repository.CommonRepository
-import jooyung.com.joomoney_api.enum.Gender
-import jooyung.com.joomoney_api.enum.Theme
+import jooyung.com.joomoney_api.enum.gender.Gender
+import jooyung.com.joomoney_api.enum.theme.Theme
 import jooyung.com.joomoney_api.exception.ApiException
 import jooyung.com.joomoney_api.exception.ResultCode
 import org.springframework.stereotype.Component
@@ -86,7 +86,7 @@ class Validator(
     fun currency(currency: String) {
         if (currency.isBlank()) throw ApiException(ResultCode.ERR_CURRENCY_IS_EMPTY)
 
-        val exists = commonRepository.existsByGroup_GroupCdAndCode(JoomoneyConstants.GROUP_CURRENCY, currency)
+        val exists = commonRepository.existsByCommonCodeGroup_GroupCdAndCode(JoomoneyConstants.GROUP_CURRENCY, currency)
 
         if (!exists) {
             throw ApiException(ResultCode.ERR_CURRENCY_IS_INVALID)
@@ -96,7 +96,7 @@ class Validator(
     fun language(language: String) {
         if (language.isBlank()) throw ApiException(ResultCode.ERR_LANGUAGE_IS_EMPTY)
 
-        val exists = commonRepository.existsByGroup_GroupCdAndCode(JoomoneyConstants.GROUP_LANGUAGE, language)
+        val exists = commonRepository.existsByCommonCodeGroup_GroupCdAndCode(JoomoneyConstants.GROUP_LANGUAGE, language)
 
         if (!exists) {
             throw ApiException(ResultCode.ERR_LANGUAGE_IS_INVALID)
@@ -121,7 +121,7 @@ class Validator(
     fun deviceType(deviceType: String) {
         if (deviceType.isBlank()) throw ApiException(ResultCode.ERR_DEVICE_TYPE_IS_EMPTY)
 
-        val exists = commonRepository.existsByGroup_GroupCdAndCode(JoomoneyConstants.GROUP_DEVICE, deviceType)
+        val exists = commonRepository.existsByCommonCodeGroup_GroupCdAndCode(JoomoneyConstants.GROUP_DEVICE, deviceType)
 
         if (!exists) {
             throw ApiException(ResultCode.ERR_DEVICE_TYPE_IS_INVALID)
@@ -131,7 +131,7 @@ class Validator(
     fun os(os: String) {
         if (os.isBlank()) throw ApiException(ResultCode.ERR_OS_IS_EMPTY)
 
-        val exists = commonRepository.existsByGroup_GroupCdAndCode(JoomoneyConstants.GROUP_OS, os)
+        val exists = commonRepository.existsByCommonCodeGroup_GroupCdAndCode(JoomoneyConstants.GROUP_OS, os)
 
         if (!exists) {
             throw ApiException(ResultCode.ERR_OS_IS_INVALID)
@@ -141,7 +141,7 @@ class Validator(
     fun platform(platform: String) {
         if (platform.isBlank()) throw ApiException(ResultCode.ERR_PLATFORM_IS_EMPTY)
 
-        val exists = commonRepository.existsByGroup_GroupCdAndCode(JoomoneyConstants.GROUP_PLATFORM, platform)
+        val exists = commonRepository.existsByCommonCodeGroup_GroupCdAndCode(JoomoneyConstants.GROUP_PLATFORM, platform)
 
         if (!exists) {
             throw ApiException(ResultCode.ERR_PLATFORM_IS_INVALID)
@@ -149,6 +149,18 @@ class Validator(
     }
 
     fun ip(ip: String) {
+        if (ip.isBlank()) {
+            throw ApiException(ResultCode.ERR_IP_IS_EMPTY)
+        }
 
+        val ipv4Pattern =
+            Regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+        val ipv6Pattern =
+            Regex("([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")
+
+        val isValidIp = ipv4Pattern.matches(ip) || ipv6Pattern.matches(ip)
+        if (!isValidIp) {
+            throw ApiException(ResultCode.ERR_IP_IS_INVALID)
+        }
     }
 }

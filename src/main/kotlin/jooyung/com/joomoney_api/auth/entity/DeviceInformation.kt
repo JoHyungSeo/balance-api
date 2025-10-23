@@ -5,27 +5,27 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "device_information")
-open class DeviceInformation {
+open class DeviceInformation (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "device_seq")
-    var deviceSeq: Long? = null
+    @Column(name = "device_seq", nullable = false)
+    var deviceSeq: Long = 0L,
 
-    @Column(name = "device_id", length = 32, nullable = false)
-    var deviceId: String = "" // UUIDv4 (32자)
+    @Column(name = "device_id", nullable = false, length = 36)
+    var deviceId: String,
 
-    @Column(name = "device_type", length = 10, nullable = false)
-    var deviceType: String = "" // PC, Mobile, Tablet
+    @Column(name = "device_type", nullable = false, length = 10)
+    var deviceType: String, // 예: MOBILE, TABLET, PC 등
 
-    @Column(name = "os", length = 10, nullable = false)
-    var os: String = "" // Windows, macOS, Android, iOS
+    @Column(name = "os", nullable = false, length = 10)
+    var os: String, // 예: iOS, Android, Windows 등
 
-    @Column(name = "platform", length = 5, nullable = false)
-    var platform: String = "" // Web, App
+    @Column(name = "platform", nullable = false, length = 5)
+    var platform: String, // 예: WEB, APP 등
 
-    @Column(name = "ip", length = 128, nullable = false)
-    var ip: String = "" // 암호화된 IP - HMAC-SHA512
+    @Column(name = "ip", nullable = false, length = 128)
+    var ip: String,
 
     @Column(name = "reg_dt", nullable = false)
     var regDt: LocalDateTime = LocalDateTime.now()
-}
+)

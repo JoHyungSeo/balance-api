@@ -8,27 +8,26 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
-class CommonService(
+class CommonService (
     private val commonRepository: CommonRepository
 ) {
-
     @Transactional
     fun getCommonCodes(groupCd: String): ResponseEntity<CommonCodeResponseDto> {
-        val codeList = commonRepository.findByGroup_GroupCd(groupCd).toList()
+        val codeList = commonRepository.findByCommonCodeGroup_GroupCd(groupCd)
 
         if (codeList.isEmpty()) {
             return ResponseEntity.notFound().build()
         }
 
-        val groupNm = codeList.first().group.groupNm ?: "N/A"
+        val groupNm = codeList.first().commonCodeGroup.groupNm
 
         val codeItems = codeList
-            .filter { it.useYn == "Y" }
-            .sortedBy { it.orderNo ?: Int.MAX_VALUE }
+            .filter { it.useYn == 'Y' }
+            .sortedBy { it.orderNo }
             .map {
                 CommonCodeItemDto(
-                    code = it.code ?: "",
-                    codeName = it.codeNm ?: ""
+                    code = it.code,
+                    codeName = it.codeNm
                 )
             }
 

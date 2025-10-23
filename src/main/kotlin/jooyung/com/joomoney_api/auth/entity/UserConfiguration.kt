@@ -1,43 +1,44 @@
 package jooyung.com.joomoney_api.auth.entity
 
 import jakarta.persistence.*
-import jooyung.com.joomoney_api.enum.Theme
+import jooyung.com.joomoney_api.enum.theme.Theme
+import jooyung.com.joomoney_api.enum.theme.ThemeConverter
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "user_configuration")
-open class UserConfiguration {
+open class UserConfiguration (
     @Id
-    @Column(name = "user_seq")
-    var userSeq: Long? = null
+    @Column(name = "user_seq", nullable = false)
+    var userSeq: Long? = null,
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_seq")
-    var userInformation: UserInformation? = null
+    var userInformation: UserInformation,
 
     @Column(name = "payday", length = 2)
-    var payday: String? = null
+    var payday: String? = null,
 
-    @Column(name = "currency", length = 3, nullable = false)
-    var currency: String = ""
+    @Column(name = "currency", nullable = false, length = 3)
+    var currency: String,
 
-    @Column(name = "language", length = 5, nullable = false)
-    var language: String = ""
+    @Column(name = "language", nullable = false, length = 5)
+    var language: String,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "theme", length = 1, nullable = false)
-    var theme: Theme = Theme.System // S = System, L = Light, D = Dark
+    @Convert(converter = ThemeConverter::class)
+    @Column(name = "theme", columnDefinition = "char(1)", nullable = false)
+    var theme: Theme = Theme.System,
 
-    @Column(name = "reg_id", length = 50, nullable = false)
-    var regId: String = ""
+    @Column(name = "reg_id", nullable = false, length = 50)
+    var regId: String,
 
     @Column(name = "reg_dt", nullable = false)
-    var regDt: LocalDateTime = LocalDateTime.now()
+    var regDt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "mod_id", length = 50)
-    var modId: String? = null
+    var modId: String? = null,
 
     @Column(name = "mod_dt")
-    var modDt: LocalDateTime? = null
-}
+    var modDt: LocalDateTime? = null,
+)

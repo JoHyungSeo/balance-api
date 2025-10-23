@@ -1,9 +1,11 @@
 package jooyung.com.joomoney_api.util.crypto
 
+import org.springframework.stereotype.Component
 import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
+@Component
 class Crypto(
     private val cryptoProperties: CryptoProperties
 ) {

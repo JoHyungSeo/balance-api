@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CommonRepository : JpaRepository<CommonCode, Long> {
-    fun findByGroup_GroupCd(groupCd: String): List<CommonCode>
+    fun findByCommonCodeGroup_GroupCd(groupCd: String): List<CommonCode>
 
-    fun existsByGroup_GroupCdAndCode(groupCd: String, code: String): Boolean
+    fun existsByCommonCodeGroup_GroupCdAndCode(groupCd: String, code: String): Boolean
 }
