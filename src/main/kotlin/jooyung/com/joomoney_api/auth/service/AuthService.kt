@@ -45,7 +45,7 @@ class AuthService (
     fun emailVerifyRequest(email: String): ResponseEntity<Void> {
         validator.email(email)
 
-        if (userEmailRepository.existsByEmailAndUseYn(email, 'Y')) {
+        if (userInformationRepository.existsByEmail(email)) {
             throw ApiException(ResultCode.ERR_EMAIL_IS_DUPLICATE)
         }
 
@@ -85,20 +85,30 @@ class AuthService (
 
         val existingEmailToken = emailTokenRepository.findByEmail(email)
 
-        if (existingEmailToken == null) {
-            throw ApiException(ResultCode.ERR_EMAIL_CODE_NOT_FOUND)
-        }
+        when {
+            existingEmailToken == null -> {
+                throw ApiException(ResultCode.ERR_EMAIL_CODE_NOT_FOUND)
+            }
 
-        if (existingEmailToken.isVerified == 'Y') {
-            throw ApiException(ResultCode.ERR_EMAIL_VERIFY_ALREADY_COMPLETED)
-        }
+            existingEmailToken.isVerified == 'Y' -> {
+                throw ApiException(ResultCode.ERR_EMAIL_VERIFY_ALREADY_COMPLETED)
+            }
 
-        if (existingEmailToken.codeExpiredDt.isBefore(LocalDateTime.now())) {
-            throw ApiException(ResultCode.ERR_EMAIL_CODE_EXPIRED)
-        }
+            existingEmailToken.codeExpiredDt.isBefore(LocalDateTime.now()) -> {
+                throw ApiException(ResultCode.ERR_EMAIL_CODE_EXPIRED)
+            }
 
-        if (existingEmailToken.code != code) {
-            throw ApiException(ResultCode.ERR_EMAIL_CODE_INVALID)
+            // fail count 추가
+
+            // fail count에 따른 15분 정지 추가
+
+            existingEmailToken.code != code -> {
+                throw ApiException(ResultCode.ERR_EMAIL_CODE_INVALID)
+            }
+
+            else -> {
+
+            }
         }
 
         val randomUuid = UUID.randomUUID().toString()
@@ -116,115 +126,133 @@ class AuthService (
         return ResponseEntity.ok(response)
     }
 
-//    @Transactional
-//    fun signUp(signUpRequestDto: SignUpRequestDto): ResponseEntity<SignUpResponseDto> {
-//        validator.userId(signUpRequestDto.userId)
-//        validator.name(signUpRequestDto.name)
-//        validator.email(signUpRequestDto.email)
-//        validator.password(signUpRequestDto.password)
-//        validator.birthday(signUpRequestDto.birthday)
-//        validator.gender(signUpRequestDto.gender)
-//        validator.payday(signUpRequestDto.payday)
-//        validator.currency(signUpRequestDto.currency)
-//        validator.language(signUpRequestDto.language)
-//        validator.theme(signUpRequestDto.theme)
-//
-//        if (userInformationRepository.existsByUserId(signUpRequestDto.userId)) {
-//            throw ApiException(ResultCode.ERR_USER_ID_IS_DUPLICATE)
-//        }
-//
-//        if (userInformationRepository.existsByEmail(signUpRequestDto.email)) {
-//            throw ApiException(ResultCode.ERR_EMAIL_IS_DUPLICATE)
-//        }
-//
-//        val encodedPassword = passwordEncoder.encode(signUpRequestDto.password)
-//
-//        val userInformation = UserInformation(
-//            userId = signUpRequestDto.userId,
-//            name = signUpRequestDto.name,
-//            email = signUpRequestDto.email,
-//            password = encodedPassword,
-//            birthday = signUpRequestDto.birthday,
-//            gender = Gender.fromName(signUpRequestDto.gender),
-//            regId = signUpRequestDto.userId,
-//            regDt = LocalDateTime.now()
-//        )
-//
-//        val savedUserInformation = userInformationRepository.save(userInformation)
-//
-//        val userConfiguration = UserConfiguration(
-//            userSeq= savedUserInformation.userSeq,
-//            userInformation = savedUserInformation,
-//            payday = signUpRequestDto.payday,
-//            currency = signUpRequestDto.currency,
-//            language = signUpRequestDto.language,
-//            theme = Theme.fromName(signUpRequestDto.theme) ?: Theme.System,
-//            regId = savedUserInformation.userId,
-//            regDt = LocalDateTime.now(),
-//        )
-//
-//        userConfigurationRepository.save(userConfiguration)
-//
-//        validator.deviceId(signUpRequestDto.deviceInformationDto.deviceId)
-//        validator.deviceType(signUpRequestDto.deviceInformationDto.deviceType)
-//        validator.os(signUpRequestDto.deviceInformationDto.os)
-//        validator.platform(signUpRequestDto.deviceInformationDto.platform)
-//
-//        val ip = getClientIp(request)
-//
-//        validator.ip(ip)
-//
-//        val hashedIp = crypto.hmacSha512(ip)
-//
-//        val deviceInformation = DeviceInformation(
-//            deviceId = signUpRequestDto.deviceInformationDto.deviceId,
-//            deviceType = signUpRequestDto.deviceInformationDto.deviceType,
-//            os = signUpRequestDto.deviceInformationDto.os,
-//            platform = signUpRequestDto.deviceInformationDto.platform,
-//            ip = hashedIp,
-//            regDt = LocalDateTime.now()
-//        )
-//
-//        deviceInformationRepository.save(deviceInformation)
-//
-//
-//        val accessToken = jwtProvider.generateAccessToken(
-//            userSeq = savedUserInformation.userSeq,
-//            userId = savedUserInformation.userId,
-//            name = savedUserInformation.name,
-//            email = savedUserInformation.email
-//        )
-//
-//        val refreshToken = jwtProvider.generateRefreshToken()
-//
-//        val refreshExpDt = LocalDateTime.ofInstant(
-//            Instant.now().plusMillis(jwtProperties.refreshTokenExpireTime),
-//            ZoneId.systemDefault()
-//        )
-//
-//        val refreshTokenEntity = RefreshToken(
-//            userInformation = savedUserInformation,
-//            deviceInformation = deviceInformation,
-//            refreshToken = refreshToken,
-//            expDt = refreshExpDt,
-//            regDt = LocalDateTime.now(),
-//        )
-//
-//        refreshTokenRepository.save(refreshTokenEntity)
-//
-//        val response = SignUpResponseDto(
-//            accessToken = accessToken,
-//            refreshToken = refreshToken,
-//            userInformation = AuthUserInformationDto(
-//                userSeq = savedUserInformation.userSeq,
-//                userId =  savedUserInformation.userId,
-//                name = savedUserInformation.name,
-//                email = savedUserInformation.email,
-//            )
-//        )
-//
-//        return ResponseEntity.ok(response)
-//    }
+    @Transactional
+    fun signUp(signUpRequestDto: SignUpRequestDto): ResponseEntity<SignUpResponseDto> {
+        validator.userId(signUpRequestDto.userId)
+        validator.name(signUpRequestDto.name)
+        validator.email(signUpRequestDto.email)
+        validator.password(signUpRequestDto.password)
+        validator.birthday(signUpRequestDto.birthday)
+        validator.gender(signUpRequestDto.gender)
+        validator.payday(signUpRequestDto.payday)
+        validator.currency(signUpRequestDto.currency)
+        validator.language(signUpRequestDto.language)
+        validator.theme(signUpRequestDto.theme)
+
+        if (userInformationRepository.existsByUserId(signUpRequestDto.userId)) {
+            throw ApiException(ResultCode.ERR_USER_ID_IS_DUPLICATE)
+        }
+
+        if (userInformationRepository.existsByEmail(signUpRequestDto.email)) {
+            throw ApiException(ResultCode.ERR_EMAIL_IS_DUPLICATE)
+        }
+
+        val existingEmailToken = emailTokenRepository.findByEmail(email)
+
+        if (existingEmailToken == null || existingEmailToken.isVerified != 'Y') {
+            // 이메일 인증부터 하고 와라
+        }
+
+        if (existingEmailToken.verificationTokenExpiredDt.isBefore(LocalDateTime.now())) {
+            throw ApiException(ResultCode.ERR_EMAIL_VERIFICATION_TOKEN_EXPIRED)
+        }
+
+        if (existingEmailToken.verificationToken != signUpRequestDto.verificationToken) {
+            throw ApiException(ResultCode.ERR_EMAIL_VERIFICATION_TOKEN_INVALID)
+        }
+
+        existingEmailToken.verifiedTokenConsumedDt = LocalDateTime.now()
+        emailTokenRepository.save(existingEmailToken)
+
+
+        val encodedPassword = passwordEncoder.encode(signUpRequestDto.password)
+
+        val userInformation = UserInformation(
+            userId = signUpRequestDto.userId,
+            name = signUpRequestDto.name,
+            email = signUpRequestDto.email,
+            password = encodedPassword,
+            birthday = signUpRequestDto.birthday,
+            gender = Gender.fromName(signUpRequestDto.gender),
+            regId = signUpRequestDto.userId,
+            regDt = LocalDateTime.now()
+        )
+
+        val savedUserInformation = userInformationRepository.save(userInformation)
+
+        val userConfiguration = UserConfiguration(
+            userSeq= savedUserInformation.userSeq,
+            userInformation = savedUserInformation,
+            payday = signUpRequestDto.payday,
+            currency = signUpRequestDto.currency,
+            language = signUpRequestDto.language,
+            theme = Theme.fromName(signUpRequestDto.theme) ?: Theme.System,
+            regId = savedUserInformation.userId,
+            regDt = LocalDateTime.now(),
+        )
+
+        userConfigurationRepository.save(userConfiguration)
+
+        validator.deviceId(signUpRequestDto.deviceInformationDto.deviceId)
+        validator.deviceType(signUpRequestDto.deviceInformationDto.deviceType)
+        validator.os(signUpRequestDto.deviceInformationDto.os)
+        validator.platform(signUpRequestDto.deviceInformationDto.platform)
+
+        val ip = getClientIp(request)
+
+        validator.ip(ip)
+
+        val hashedIp = crypto.hmacSha512(ip)
+
+        val deviceInformation = DeviceInformation(
+            deviceId = signUpRequestDto.deviceInformationDto.deviceId,
+            deviceType = signUpRequestDto.deviceInformationDto.deviceType,
+            os = signUpRequestDto.deviceInformationDto.os,
+            platform = signUpRequestDto.deviceInformationDto.platform,
+            ip = hashedIp,
+            regDt = LocalDateTime.now()
+        )
+
+        deviceInformationRepository.save(deviceInformation)
+
+
+        val accessToken = jwtProvider.generateAccessToken(
+            userSeq = savedUserInformation.userSeq,
+            userId = savedUserInformation.userId,
+            name = savedUserInformation.name,
+            email = savedUserInformation.email
+        )
+
+        val refreshToken = jwtProvider.generateRefreshToken()
+
+        val refreshExpDt = LocalDateTime.ofInstant(
+            Instant.now().plusMillis(jwtProperties.refreshTokenExpireTime),
+            ZoneId.systemDefault()
+        )
+
+        val refreshTokenEntity = RefreshToken(
+            userInformation = savedUserInformation,
+            deviceInformation = deviceInformation,
+            refreshToken = refreshToken,
+            expDt = refreshExpDt,
+            regDt = LocalDateTime.now(),
+        )
+
+        refreshTokenRepository.save(refreshTokenEntity)
+
+        val response = SignUpResponseDto(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            userInformation = AuthUserInformationDto(
+                userSeq = savedUserInformation.userSeq,
+                userId =  savedUserInformation.userId,
+                name = savedUserInformation.name,
+                email = savedUserInformation.email,
+            )
+        )
+
+        return ResponseEntity.ok(response)
+    }
 
     @Transactional
     fun checkDuplicateUserId(userId: String): ResponseEntity<DuplicateResponse> {

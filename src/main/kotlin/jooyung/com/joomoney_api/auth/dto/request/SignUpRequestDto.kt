@@ -7,6 +7,7 @@ data class SignUpRequestDto (
     val userId: String,
     val name: String,
     val email: String,
+    val verificationToken: String,
     val password: String,
     val birthday: LocalDate?,
     val gender: String?,
